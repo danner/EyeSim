@@ -259,6 +259,63 @@ void slow() {
     delay(random(1000, 2000));
 }
 
+
+void big_x() {
+#if defined(INFO)
+    Serial.println(F("big x"));
+#endif
+    if(curr_x < 0) {
+      push_position(
+          random(0, MAX_X),
+          curr_y,
+          random(MIN_SPEED, MAX_SPEED),
+          random(MIN_SPEED, MAX_SPEED));
+    } else {
+      push_position(
+          random(MIN_X, 0),
+          curr_y,
+          random(MIN_SPEED, MAX_SPEED),
+          random(MIN_SPEED, MAX_SPEED));
+    }
+    Servo1.setEaseTo(curr_x, curr_x_speed);
+    // second servo takes speed from first for this move so they finish at the same time?
+    Servo2.startEaseToD(curr_y, Servo1.mMillisForCompleteMove); // This start interrupt for all servos
+    // blink until both servos stop
+    while (ServoEasing::areInterruptsActive()) {
+        blinkLED();
+    }
+    delay(random(1000, 2000));
+}
+void big_y() {
+#if defined(INFO)
+    Serial.println(F("big y"));
+#endif
+    if(curr_y < 0) {
+      push_position(
+          curr_x,
+          random(0, MAX_Y),
+          random(MIN_SPEED, MAX_SPEED),
+          random(MIN_SPEED, MAX_SPEED));
+    } else {
+      push_position(
+          curr_x,
+          random(MIN_Y, 0),
+          random(MIN_SPEED, MAX_SPEED),
+          random(MIN_SPEED, MAX_SPEED));
+    }
+    Servo1.setEaseTo(curr_x, curr_x_speed);
+    // second servo takes speed from first for this move so they finish at the same time?
+    Servo2.startEaseToD(curr_y, Servo1.mMillisForCompleteMove); // This start interrupt for all servos
+    // blink until both servos stop
+    while (ServoEasing::areInterruptsActive()) {
+        blinkLED();
+    }
+    delay(random(1000, 2000));
+}
+void test_extents() {
+  
+};
+
 void loop() {
 
     /*
@@ -278,7 +335,9 @@ void loop() {
     // previous position at same speed (saccade)
     // quick move (context shift)
     // slow move (following)
-    switch(random(10)) {
+    // big x (shift pan)
+    // big y (shift tilt)
+    switch(random(12)) {
         case 0:
         case 1:
         case 2:
@@ -299,66 +358,11 @@ void loop() {
         case 9:
             quick();
             break;
+        case 10:
+            big_x();
+            break;
+        case 11:
+            big_y();
+            break;
     }
-
-    /*
-     * Now continue faster.
-     */
-    // #if defined(INFO)
-    //     Serial.println(F("Move to 90/10 degree with up to 60 degree per second using interrupts"));
-    // #endif
-    //     Servo1.setEaseTo(90, 60);
-    //     /*
-    //     * An alternative method to synchronize and start
-    //     * Synchronize by simply using the same duration
-    //     */
-    //     Servo2.startEaseToD(10, Servo1.mMillisForCompleteMove); // This start interrupt for all servos
-    //     /*
-    //     * Now you can run your program while the servos are moving.
-    //     * Just let the LED blink until servos stop.
-    //     */
-    //     while (ServoEasing::areInterruptsActive()) {
-    //         blinkLED();
-    //     }
-
-//     /*
-//      * Move servo1 using cubic easing. Use interrupts for update.
-//      *  The first servo moves with the specified speed.
-//      *  The second will be synchronized to slower speed (longer duration, than specified) because it has to move only 80 degree.
-//      */
-// #if defined(INFO)
-//     Serial.println(F("Move to 0/90 degree with up to 90 degree per second using interrupts. Use cubic easing for first servo."));
-// #endif
-//     Servo1.setEasingType(EASE_CUBIC_IN_OUT);
-//     /*
-//      * Another method to specify moves
-//      * Use the ServoEasingNextPositionArray and then call the appropriate function
-//      */
-//     ServoEasing::ServoEasingNextPositionArray[0] = 0;
-//     ServoEasing::ServoEasingNextPositionArray[1] = 90;
-//     setEaseToForAllServosSynchronizeAndStartInterrupt(90);
-
-//     // Must call yield here for the ESP boards, since we have no delay called
-//     while (ServoEasing::areInterruptsActive()) {
-//         ;
-//     }
-//     Servo1.setEasingType(EASE_LINEAR);
-
-//     delay(300);
-
-//     /*
-//      * Move both servos independently
-//      */
-// #if defined(INFO)
-//     Serial.println(F("Move independently to -90/0 degree with 60/80 degree per second using interrupts"));
-// #endif
-//     Servo1.setEaseTo(-90, 60);
-//     Servo2.startEaseTo(0, 80); // This start interrupt for all servos
-//     // blink until both servos stop
-//     while (ServoEasing::areInterruptsActive()) {
-//         blinkLED();
-//     }
-
-//     delay(500);
-
 }
