@@ -1,15 +1,8 @@
 /*
- * TwoServos.cpp
- *
- *  Shows smooth movement from one servo position to another for 2 servos synchronously.
- *  Operate the first servo from -90 to +90 degree.
- *  This example uses the LightweightServo library. This saves 640 bytes program memory compared to using Arduino Servo library.
- *
- *  Copyright (C) 2019-2021  Armin Joachimsmeyer
- *  armin.joachimsmeyer@gmail.com
- *
- *  This file is part of ServoEasing https://github.com/ArminJo/ServoEasing.
- *
+ *  EyeSim using ServoEasing
+ *  
+ *  Based on the TwoServo.cpp example in the ServoEasing Library. <https://github.com/ArminJo/ServoEasing/tree/master/examples/TwoServos>
+ *  
  *  ServoEasing is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
