@@ -19,12 +19,6 @@
 
 #include <Arduino.h>
 
-// Must specify this before the include of "ServoEasing.hpp"
-#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328__)
-#define USE_LEIGHTWEIGHT_SERVO_LIB
-#include "LightweightServo.hpp" // include sources of LightweightServo library
-#endif
-
 //#define PROVIDE_ONLY_LINEAR_MOVEMENT // Activate this to disable all but LINEAR movement. Saves up to 1540 bytes program memory.
 #define DISABLE_COMPLEX_FUNCTIONS // Activate this to disable the SINE, CIRCULAR, BACK, ELASTIC and BOUNCE easings. Saves up to 1850 bytes program memory.
 #define MAX_EASING_SERVOS 2
@@ -62,8 +56,8 @@ ServoEasing Servo2;
 #define MAX_Y 20
 #define MIN_Y -10
 #define MAX_SPEED 30
-#define MIN_SPEED 1
-#define LONGEST_WAIT 1000*60*1 // one minute longest stare for now, maybe 5 minutes eventually.
+#define MIN_SPEED 8
+#define LONGEST_WAIT 1000*60*2 // one minute longest stare for now, maybe 5 minutes eventually.
 
 // Define my functions
 void blinkLED();
@@ -130,11 +124,11 @@ void setup() {
      * Instead of specifying a trim you can use above:
      *   if (Servo1.attach(SERVO1_PIN, DEFAULT_MICROSECONDS_FOR_0_DEGREE, DEFAULT_MICROSECONDS_FOR_180_DEGREE, -90, 90) == INVALID_SERVO) {
      */
-    Servo1.setTrim(90);
-    Servo2.setTrim(90);
+    Servo1.setTrim(0);
+    Servo2.setTrim(0);
     Servo1.setEasingType(EASE_CUBIC_IN_OUT);
     Servo2.setEasingType(EASE_CUBIC_IN_OUT);
-    setSpeedForAllServos(30);
+    setSpeedForAllServos(MIN_SPEED);
 
     // Just wait for servos to reach position.
     delay(500);
@@ -239,8 +233,8 @@ void slow() {
     push_position(
         random(MIN_X, MAX_X),
         random(MIN_Y, MAX_Y),
-        random(MIN_SPEED, MAX_SPEED/6),
-        random(MIN_SPEED, MAX_SPEED/6));
+        random(MIN_SPEED, MAX_SPEED/3),
+        random(MIN_SPEED, MAX_SPEED/3));
     Servo1.setEaseTo(curr_x, curr_x_speed);
     // second servo takes speed from first for this move so they finish at the same time?
     Servo2.startEaseToD(curr_y, Servo1.mMillisForCompleteMove); // This start interrupt for all servos
@@ -306,7 +300,24 @@ void big_y() {
     delay(random(1000, 2000));
 }
 void test_extents() {
-  
+    Servo1.setEaseTo(0, MIN_SPEED);
+    Servo2.startEaseToD(0, Servo1.mMillisForCompleteMove);
+    delay(random(1000, 2000));
+    Servo1.setEaseTo(MIN_X, MIN_SPEED);
+    Servo2.startEaseToD(MIN_Y, Servo1.mMillisForCompleteMove);
+    delay(500);
+    Servo1.setEaseTo(MAX_X, MIN_SPEED);
+    Servo2.startEaseToD(MIN_Y, Servo1.mMillisForCompleteMove);
+    delay(500);
+    Servo1.setEaseTo(MAX_X, MIN_SPEED);
+    Servo2.startEaseToD(MAX_Y, Servo1.mMillisForCompleteMove);
+    delay(500);
+    Servo1.setEaseTo(MIN_X, MIN_SPEED);
+    Servo2.startEaseToD(MAX_Y, Servo1.mMillisForCompleteMove);
+    delay(500);
+    Servo1.setEaseTo(0, MIN_SPEED);
+    Servo2.startEaseToD(0, Servo1.mMillisForCompleteMove);
+    delay(500);
 };
 
 void loop() {
@@ -330,6 +341,7 @@ void loop() {
     // slow move (following)
     // big x (shift pan)
     // big y (shift tilt)
+    test_extents();
     switch(random(12)) {
         case 0:
         case 1:
